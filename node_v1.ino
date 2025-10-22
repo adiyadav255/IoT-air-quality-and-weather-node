@@ -26,7 +26,6 @@ void loop() {
     Serial.print("PM 1.0:"); Serial.println(data.PM_AE_UG_1_0);//Atmospheric Environment reading//
     Serial.print("PM 2.5: "); Serial.println(data.PM_AE_UG_2_5);
     Serial.print("PM 10: "); Serial.println(data.PM_AE_UG_10_0);
-    delay(4000);
   }
   //DHT11//
   float t=dht.readTemperature();
@@ -41,4 +40,5 @@ void loop() {
   float ppm=co2sensor.getCorrectedPPM(t,rh);
   Serial.print("CO2 Corrected:");Serial.println(ppm,2);
   Serial.println("-------------------------------------------");
+  delay(3000);
 }
