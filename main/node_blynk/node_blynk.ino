@@ -14,7 +14,7 @@ PMS pms(Serial2);
 PMS::DATA data;
 char auth[] = "H5OXKNaNL93W1dLbRS6qvOvidInfoSJv";
 char ssid[] = "Aditya";
-char pass[] = "Aditya@12345";
+char pass[] = "adi@12345";
 BlynkTimer timer;
 void sendSensorData()
 {
@@ -26,7 +26,7 @@ void sendSensorData()
     return;
   }
   //PMS7003//
-   if(pms.read(data)){
+   //if(pms.read(data)){
     Serial.println("---------SENSOR READINGS----------");
     Serial.print("PM 1.0:"); Serial.println(data.PM_AE_UG_1_0);//Atmospheric Environment reading//
     Serial.print("PM 2.5: "); Serial.println(data.PM_AE_UG_2_5);
@@ -36,7 +36,6 @@ void sendSensorData()
     Blynk.virtualWrite(V1,rh); 
     Blynk.virtualWrite(V2,data.PM_AE_UG_2_5); 
     Blynk.virtualWrite(V3,data.PM_AE_UG_10_0);
-  }
 }
 void setup() {
   Serial.begin(115200);
@@ -45,7 +44,10 @@ void setup() {
   Serial.println("DHT init");
   Serial2.begin(9600,SERIAL_8N1, RXD2, TXD2);
   Serial.print("PMS init");
-  Blynk.begin(auth,ssid,pass);
+  WiFi.begin(ssid, pass);
+  Blynk.config(auth);
+  Blynk.connect();
+  Serial.print("Connected");
   timer.setInterval(15000L,sendSensorData);
 }
 void loop() {

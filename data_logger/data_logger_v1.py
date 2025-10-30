@@ -23,7 +23,7 @@ with open(filename, 'w', newline='') as f:
                     f.flush()
                     print(parts)
                 else:
-                    print(f"Skipped line (Wrong length, expected 5 parts): {line}")
+                    print(f"Skipped line (Wrong length, expected 7 parts): {line}")
 
     except KeyboardInterrupt:
         print("\nLogging stopped.")

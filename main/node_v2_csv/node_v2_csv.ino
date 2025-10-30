@@ -34,7 +34,7 @@ void setup() {
   coSensor.setB(-1.518);
   coSensor.setRegressionMethod(1);  
   // MQ-7 Calibration routine, optional after first run
-  Serial.print("Calibrating MQ7 please wait.");
+  Serial.print("Calibrating MQ7");
   float calcR0 = 0;
   for(int i = 1; i<=10; i ++) {
     coSensor.update();
