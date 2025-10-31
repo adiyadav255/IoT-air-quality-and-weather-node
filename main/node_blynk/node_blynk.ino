@@ -11,10 +11,12 @@
 #define MQ135_PIN 36
 DHT dht(DHTPIN, DHTTYPE);
 PMS pms(Serial2);
+int pm25=0;
+int pm10=0;
 PMS::DATA data;
 char auth[] = "H5OXKNaNL93W1dLbRS6qvOvidInfoSJv";
-char ssid[] = "Aditya";
-char pass[] = "adi@12345";
+char ssid[] = "Connected, no internet";
+char pass[] = "Aditya@12345";
 BlynkTimer timer;
 void sendSensorData()
 {
@@ -25,17 +27,16 @@ void sendSensorData()
     Serial.println("DHT11: Failed to read!");
     return;
   }
-  //PMS7003//
-   //if(pms.read(data)){
-    Serial.println("---------SENSOR READINGS----------");
-    Serial.print("PM 1.0:"); Serial.println(data.PM_AE_UG_1_0);//Atmospheric Environment reading//
-    Serial.print("PM 2.5: "); Serial.println(data.PM_AE_UG_2_5);
-    Serial.print("PM 10: "); Serial.println(data.PM_AE_UG_10_0);
-    //Send to Blynk//
-    Blynk.virtualWrite(V0,t); 
-    Blynk.virtualWrite(V1,rh); 
-    Blynk.virtualWrite(V2,data.PM_AE_UG_2_5); 
-    Blynk.virtualWrite(V3,data.PM_AE_UG_10_0);
+  Serial.println("------Sending to Blynk------");
+  Serial.print("Temp: "); Serial.println(t);
+  Serial.print("Hum : "); Serial.println(rh);
+  Serial.print("PM2.5: "); Serial.println(pm25);
+  Serial.print("PM10 : "); Serial.println(pm10);
+
+  Blynk.virtualWrite(V0, t);
+  Blynk.virtualWrite(V1, rh);
+  Blynk.virtualWrite(V2, pm25);
+  Blynk.virtualWrite(V3, pm10);
 }
 void setup() {
   Serial.begin(115200);
@@ -43,14 +44,16 @@ void setup() {
   dht.begin();
   Serial.println("DHT init");
   Serial2.begin(9600,SERIAL_8N1, RXD2, TXD2);
-  Serial.print("PMS init");
-  WiFi.begin(ssid, pass);
-  Blynk.config(auth);
-  Blynk.connect();
-  Serial.print("Connected");
+  Serial.println("PMS init");
+  Blynk.begin(auth,ssid,pass);
+  Serial.print("Connected Successfully");
   timer.setInterval(15000L,sendSensorData);
 }
 void loop() {
   Blynk.run();
   timer.run();
+  if (pms.read(data)) {
+    pm25=data.PM_AE_UG_2_5;
+    pm10=data.PM_AE_UG_10_0;
+  }
 }
