@@ -4,6 +4,7 @@
 #include<BlynkSimpleEsp32.h>
 #include<PMS.h>
 #include<DHT.h>
+#define LED 2
 #define DHTTYPE DHT11
 #define DHTPIN 4
 #define RXD2 16
@@ -11,7 +12,7 @@
 #define MQ135_PIN 36
 DHT dht(DHTPIN, DHTTYPE);
 PMS pms(Serial2);
-int pm25=0;
+int pm25=0;//Global var//
 int pm10=0;
 PMS::DATA data;
 char auth[] = "H5OXKNaNL93W1dLbRS6qvOvidInfoSJv";
@@ -27,16 +28,18 @@ void sendSensorData()
     Serial.println("DHT11: Failed to read!");
     return;
   }
-  Serial.println("------Sending to Blynk------");
-  Serial.print("Temp: "); Serial.println(t);
-  Serial.print("Hum : "); Serial.println(rh);
-  Serial.print("PM2.5: "); Serial.println(pm25);
-  Serial.print("PM10 : "); Serial.println(pm10);
-
+  //Sending to Blynk//
   Blynk.virtualWrite(V0, t);
   Blynk.virtualWrite(V1, rh);
   Blynk.virtualWrite(V2, pm25);
   Blynk.virtualWrite(V3, pm10);
+  for(int i=0;i<2;i++)
+  {
+    digitalWrite(LED, HIGH);
+    delay(100);
+    digitalWrite(LED, LOW);
+    delay(100);
+  }
 }
 void setup() {
   Serial.begin(115200);
@@ -46,12 +49,13 @@ void setup() {
   Serial2.begin(9600,SERIAL_8N1, RXD2, TXD2);
   Serial.println("PMS init");
   Blynk.begin(auth,ssid,pass);
-  Serial.print("Connected Successfully");
+  Serial.println("Connected Successfully"); Serial.println("------------------------");
   timer.setInterval(15000L,sendSensorData);
 }
 void loop() {
   Blynk.run();
   timer.run();
+  //PMS//
   if (pms.read(data)) {
     pm25=data.PM_AE_UG_2_5;
     pm10=data.PM_AE_UG_10_0;
