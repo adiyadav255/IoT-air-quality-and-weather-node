@@ -28,7 +28,7 @@ PMS::DATA data;
 char auth[] = "H5OXKNaNL93W1dLbRS6qvOvidInfoSJv";
 char ssid[] = "Connected, no internet";
 char pass[] = "Aditya@12345";
-const char*=10.96.51.48;
+const char* pc_ip="10.96.51.48";
 const int pc_port=9000;
 WiFiUDP udp;
 BlynkTimer timer;
@@ -46,25 +46,23 @@ void sendSensorData()
   float ppm1=co2Sensor.readSensor();
   co2Sensor.update();
   float ppm2=coSensor.readSensor();
+  if(isnan(ppm2))
+  {
+    ppm2=0.00;
+  }
   //SEND TO BLYNK//
   Blynk.virtualWrite(V1, rh);
   Blynk.virtualWrite(V2, pm25);
   Blynk.virtualWrite(V3, pm10);
-  Blynk.virtualWrite(V4, ppm1);
-  Blynk.virtualWrite(V5, ppm2);
-  for(int i=0;i<2;i++)
-  {
-    digitalWrite(LED, HIGH);
-    delay(100);
-    digitalWrite(LED, LOW);
-    delay(100);
-  }
+  Blynk.virtualWrite(V4, ppm2);
+  Blynk.virtualWrite(V5, ppm1);
   //UDP packet//
   char buffer[128];
-  snprintf(buffer, sizeof(buffer), "%.2f,%.2f,%.2f,%.2f\n", t, h, pm25, pm10);
+  snprintf(buffer, sizeof(buffer), "%.2f,%.2f,%.2f,%d,%d,%.2f,%.2f\n",millis()/1000.0, t, rh, pm25, pm10, ppm1, ppm2);
   udp.beginPacket(pc_ip, pc_port);
   udp.print(buffer);
   udp.endPacket();
+  Serial.println("Packet Sent");
 }
 void setup() {
   Serial.begin(115200);
@@ -84,7 +82,7 @@ void setup() {
   float calcR0 = 0;
   for(int i = 1; i<=10; i ++) {
     coSensor.update();
-    calcR0 += coSensor.calibrate(20.00);
+    calcR0 += coSensor.calibrate(18.00);
     delay(500);
   }
   coSensor.setR0(calcR0/10);

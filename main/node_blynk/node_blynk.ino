@@ -1,6 +1,7 @@
 #define BLYNK_TEMPLATE_ID "TMPL3rQGiyUze"
 #define BLYNK_TEMPLATE_NAME "ESP32 AQI Node"
 #include<WiFi.h>
+#include<WiFiUdp.h>
 #include<BlynkSimpleEsp32.h>
 #include<PMS.h>
 #include<DHT.h>
@@ -18,6 +19,9 @@ PMS::DATA data;
 char auth[] = "H5OXKNaNL93W1dLbRS6qvOvidInfoSJv";
 char ssid[] = "Connected, no internet";
 char pass[] = "Aditya@12345";
+const char* pc_ip="10.96.51.48";
+const int pc_port=9000;
+WiFiUDP udp;
 BlynkTimer timer;
 void sendSensorData()
 {
@@ -33,13 +37,13 @@ void sendSensorData()
   Blynk.virtualWrite(V1, rh);
   Blynk.virtualWrite(V2, pm25);
   Blynk.virtualWrite(V3, pm10);
-  for(int i=0;i<2;i++)
-  {
-    digitalWrite(LED, HIGH);
-    delay(100);
-    digitalWrite(LED, LOW);
-    delay(100);
-  }
+  //UDP packet//
+  char buffer[128];
+  snprintf(buffer, sizeof(buffer), "%.2f,%.2f,%.2f,%d,%d\n",millis()/1000.0, t, rh, pm25, pm10);
+  udp.beginPacket(pc_ip, pc_port);
+  udp.print(buffer);
+  udp.endPacket();
+  Serial.println("Packet Sent");
 }
 void setup() {
   Serial.begin(115200);
