@@ -46,7 +46,7 @@ void setup() {
   float calcR0 = 0;
   for(int i = 1; i<=10; i ++) {
     coSensor.update();
-    calcR0 += coSensor.calibrate(22.8);
+    calcR0 += coSensor.calibrate(22.0);
     delay(500);
   }
   coSensor.setR0(calcR0/10);
@@ -83,6 +83,14 @@ void loop() {
   //MQ135//
   co2Sensor.update();
   float ppm2=coSensor.readSensor();
+  if(isnan(ppm1))
+  {
+    ppm1=0.00;
+  }
+  if(isnan(ppm2))
+  {
+    ppm2=0.00;
+  }
   //csv output//
   Serial.print(millis()/1000.0); Serial.print(",");
   Serial.print(t); Serial.print(",");
@@ -95,14 +103,7 @@ void loop() {
   udp.beginPacket(pc_ip, pc_port);
   udp.print(buffer);
   udp.endPacket();
-  if(isnan(ppm1))
-  {
-    ppm1=0.00;
-  }
-  if(isnan(ppm2))
-  {
-    ppm2=0.00;
-  }
+  
   Serial.print(ppm1,2); Serial.print(",");
   Serial.println(ppm2,2);
   delay(15000);

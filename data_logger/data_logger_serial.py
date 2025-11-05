@@ -11,7 +11,7 @@ filename = f"ESP32_AirData_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
 
 with open(filename, 'w', newline='') as f:
     writer = csv.writer(f)
-    writer.writerow(["System_Time", "Uptime(ms)", "Temp", "Humidity", "PM2.5", "PM10","CO2","CO"])
+    writer.writerow(["System_Time", "Uptime(ms)", "Temp", "Humidity", "PM2.5", "PM10","NO2","CO"])
     print(f"Logging data to {filename} ... Press Ctrl+C to stop.")
     try:
         while True:

@@ -13,7 +13,7 @@ print(f"Listening on UDP port {UDP_PORT}...")
 
 with open(FILENAME, "a", newline='') as f:
     writer=csv.writer(f)
-    writer.writerow(["System_Time", "Uptime(ms)", "Temp", "Humidity", "PM2.5", "PM10, CO2, CO"])
+    writer.writerow(["System_Time", "Uptime(ms)", "Temp", "Humidity", "PM2.5", "PM10","NO2","CO"])
     print(f"Logging data to {FILENAME} ... Press Ctrl+C to stop")
     try:
         while True:
