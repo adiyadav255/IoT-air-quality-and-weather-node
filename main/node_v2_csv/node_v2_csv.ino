@@ -41,7 +41,6 @@ void setup() {
   coSensor.setA(99.042); 
   coSensor.setB(-1.518);
   coSensor.setRegressionMethod(1);  
-  // MQ-7 Calibration routine, optional after first run
   Serial.print("Calibrating MQ7");
   float calcR0 = 0;
   for(int i = 1; i<=10; i ++) {
@@ -57,7 +56,7 @@ void setup() {
   co2Sensor.setR0(RZERO_135);
   co2Sensor.setRL(RL);
   co2Sensor.setRegressionMethod(1);
-  co2Sensor.setA(110.47); // Empirical constants for CO2 from MQ135 datasheet
+  co2Sensor.setA(110.47); 
   co2Sensor.setB(-2.862);
   Serial.print("Calibrating MQ135... ");
   float calcR0_CO2 = 0;
@@ -97,15 +96,14 @@ void loop() {
   Serial.print(rh); Serial.print(",");
   Serial.print(data.PM_AE_UG_2_5); Serial.print(",");
   Serial.print(data.PM_AE_UG_10_0); Serial.println(",");
+    Serial.print(ppm1,2); Serial.print(",");
+  Serial.println(ppm2,2);
   //UDP Packet//
   char buffer[128];
   snprintf(buffer, sizeof(buffer), "%.2f,%.2f,%.2f,%d,%d,%.2f,%.2f\n",millis()/1000.0, t, rh, data.PM_AE_UG_2_5, data.PM_AE_UG_10_0, ppm1, ppm2);
   udp.beginPacket(pc_ip, pc_port);
   udp.print(buffer);
   udp.endPacket();
-  
-  Serial.print(ppm1,2); Serial.print(",");
-  Serial.println(ppm2,2);
   delay(15000);
   }
 }
