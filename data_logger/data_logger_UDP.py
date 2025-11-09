@@ -3,7 +3,7 @@ import csv
 from datetime import datetime
 
 UDP_IP = "0.0.0.0"
-UDP_PORT = 9000
+UDP_PORT = 8000
 FILENAME = f"ESP32_AirData_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

@@ -23,8 +23,8 @@ PMS pms(Serial2);
 PMS::DATA data;
 char ssid[] = "Connected, no internet";
 char pass[] = "Aditya@12345";
-const char* pc_ip="10.96.51.48";
-const int pc_port=9000;
+const char* pc_ip="10.222.139.48";
+const int pc_port=8000;
 WiFiUDP udp;
 void setup() {
   Serial.begin(115200);
@@ -90,13 +90,13 @@ void loop() {
   {
     ppm2=0.00;
   }
-  //csv output//
+  //Serial output//
   Serial.print(millis()/1000.0); Serial.print(",");
   Serial.print(t); Serial.print(",");
   Serial.print(rh); Serial.print(",");
   Serial.print(data.PM_AE_UG_2_5); Serial.print(",");
-  Serial.print(data.PM_AE_UG_10_0); Serial.println(",");
-    Serial.print(ppm1,2); Serial.print(",");
+  Serial.print(data.PM_AE_UG_10_0); Serial.print(",");
+  Serial.print(ppm1,2); Serial.print(",");
   Serial.println(ppm2,2);
   //UDP Packet//
   char buffer[128];
@@ -105,5 +105,6 @@ void loop() {
   udp.print(buffer);
   udp.endPacket();
   delay(15000);
+  Serial.println("Packet Sent");
   }
 }
