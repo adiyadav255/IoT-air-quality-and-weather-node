@@ -90,17 +90,27 @@ void loop() {
   {
     ppm2=0.00;
   }
+  //AQI Prediction//
+  float predictAQI(float pm25_raw, float pm10_raw) {
+    //StandardScaler transformation
+    float pm25_scaled = (data.PM_AE_UG_2_5 - 197.25513906) / 50.92380164;
+    float pm10_scaled = (data.PM_AE_UG_10_0 - 227.17230955) / 60.14131832;
+    //Linear Regression Formula
+    float aqi = (133.59694591 * pm25_scaled) + (-86.0035514 * pm10_scaled) + 349.86281917;
+    return aqi;
+  }
   //Serial output//
   Serial.print(millis()/1000.0); Serial.print(",");
   Serial.print(t); Serial.print(",");
   Serial.print(rh); Serial.print(",");
+  float AQI=predictAQI(data.PM_AE_UG_2_5,data.PM_AE_UG_10_0);
   Serial.print(data.PM_AE_UG_2_5); Serial.print(",");
   Serial.print(data.PM_AE_UG_10_0); Serial.print(",");
   Serial.print(ppm1,2); Serial.print(",");
-  Serial.println(ppm2,2);
+  Serial.print(ppm2,2);Serial.println(AQI,1);
   //UDP Packet//
   char buffer[128];
-  snprintf(buffer, sizeof(buffer), "%.2f,%.2f,%.2f,%d,%d,%.2f,%.2f\n",millis()/1000.0, t, rh, data.PM_AE_UG_2_5, data.PM_AE_UG_10_0, ppm1, ppm2);
+  snprintf(buffer, sizeof(buffer), "%.2f,%.2f,%.2f,%d,%d,%.2f,%.2f,%2f,\n",millis()/1000.0, t, rh, data.PM_AE_UG_2_5, data.PM_AE_UG_10_0, ppm1, ppm2, AQI);
   udp.beginPacket(pc_ip, pc_port);
   udp.print(buffer);
   udp.endPacket();

@@ -8,7 +8,6 @@ import numpy as np
 INDOOR_PATH="AQI_data_indoor/*.csv"
 OUTDOOR_PATH="AQI_data_outdoor/*.csv"
 SAVE_DIR="processed_data/"
-# (Removed explicit column-name filtering; assume CSVs contain the expected columns)
 
 def compute_aqi(pm25, pm10):
     def sub_index(conc, breakpoints):
@@ -57,7 +56,6 @@ def load_and_clean(path_pattern, label):
     dfs = []
     for file in files:
         df = pd.read_csv(file)
-        # Do not perform any column-name filtering or renaming here; assume CSVs have correct headers
         # Coerce PM columns to numeric (invalid parsing -> NaN) if present
         for pm_col in ("PM2.5", "PM10"):
             if pm_col in df.columns:
@@ -104,4 +102,6 @@ print("Dataset Prepared Successfully!")
 print(f"Total Samples: {len(combined_df)}")
 print(f"Train Samples: {len(X_train)}, Test Samples: {len(X_test)}")
 print("Features used:", features)
+print("Scaled Mean:", scaler.mean_)
+print("Scale:", scaler.scale_)
 print("Files saved in:", SAVE_DIR)
