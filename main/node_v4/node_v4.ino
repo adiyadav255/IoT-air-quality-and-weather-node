@@ -20,12 +20,23 @@ DHT dht(DHTPIN, DHTTYPE);
 MQUnifiedsensor coSensor(BOARD, VOLT_RES, ADC_BIT_RES, MQ7_PIN);
 MQUnifiedsensor co2Sensor(BOARD, VOLT_RES, ADC_BIT_RES, MQ135_PIN);
 PMS pms(Serial2);
+float predictAQI(float pm25_raw, float pm10_raw);
 PMS::DATA data;
 char ssid[] = "Connected, no internet";
 char pass[] = "Aditya@12345";
-const char* pc_ip="10.222.139.48";
+const char* pc_ip="10.115.108.48";
 const int pc_port=8000;
 WiFiUDP udp;
+//AQI Prediction//
+  float predictAQI(float pm25_raw, float pm10_raw) 
+  {
+    //StandardScaler transformation
+    float pm25_scaled = (data.PM_AE_UG_2_5 - 197.25513906) / 50.92380164;
+    float pm10_scaled = (data.PM_AE_UG_10_0 - 227.17230955) / 60.14131832;
+    //Linear Regression Formula
+    float aqi = (133.59694591 * pm25_scaled) + (-86.0035514 * pm10_scaled) + 349.86281917;
+    return aqi;
+  }
 void setup() {
   Serial.begin(115200);
   Serial.println("Power ON");
@@ -94,13 +105,14 @@ void loop() {
   Serial.print(millis()/1000.0); Serial.print(",");
   Serial.print(t); Serial.print(",");
   Serial.print(rh); Serial.print(",");
+  float AQI=predictAQI(data.PM_AE_UG_2_5,data.PM_AE_UG_10_0);
   Serial.print(data.PM_AE_UG_2_5); Serial.print(",");
   Serial.print(data.PM_AE_UG_10_0); Serial.print(",");
   Serial.print(ppm1,2); Serial.print(",");
-  Serial.println(ppm2,2);
+  Serial.print(ppm2,2); Serial.print(","); Serial.println(AQI,1);
   //UDP Packet//
   char buffer[128];
-  snprintf(buffer, sizeof(buffer), "%.2f,%.2f,%.2f,%d,%d,%.2f,%.2f,%2f,\n",millis()/1000.0, t, rh, data.PM_AE_UG_2_5, data.PM_AE_UG_10_0, ppm1, ppm2);
+  snprintf(buffer, sizeof(buffer), "%.2f,%.2f,%.2f,%d,%d,%.2f,%.2f,%2f,\n",millis()/1000.0, t, rh, data.PM_AE_UG_2_5, data.PM_AE_UG_10_0, ppm1, ppm2, AQI);
   udp.beginPacket(pc_ip, pc_port);
   udp.print(buffer);
   udp.endPacket();

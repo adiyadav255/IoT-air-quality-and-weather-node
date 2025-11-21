@@ -57,9 +57,9 @@ def load_and_clean(path_pattern, label):
     for file in files:
         df = pd.read_csv(file)
         # Coerce PM columns to numeric (invalid parsing -> NaN) if present
-        for pm_col in ("PM2.5", "PM10"):
-            if pm_col in df.columns:
-                df[pm_col] = pd.to_numeric(df[pm_col], errors='coerce')
+        for col in ("PM2.5", "PM10", "Temp", "Humidity"):
+            if col in df.columns:
+                df[col] = pd.to_numeric(df[col], errors='coerce')
         # Sort by System_Time (assumes System_Time is present and already clean)
         df.sort_values("System_Time", inplace=True)
         df.drop_duplicates(subset=["System_Time"], inplace=True)
@@ -77,7 +77,7 @@ combined_df.reset_index(drop=True, inplace=True)
 
 combined_df.dropna(subset=["AQI"], inplace=True)
 
-features = ["PM2.5", "PM10"]
+features = ["PM2.5", "PM10", "Temp", "Humidity"]
 target = "AQI"
 
 X = combined_df[features]
