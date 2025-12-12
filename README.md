@@ -1,5 +1,5 @@
 # IoT-air-quality-and-weather-node
-An IoT node that can monitor and transmit air quality, temperature and humidity through WiFi (UDP Packets) to a connected device and to a Blynk Dashboard
+An IoT node that can monitor and transmit air quality, temperature and humidity through WiFi (UDP Packets) to a connected device, which are displayed by a simple python-based (Tkinter) dashboard app
 
 <img width="800" height="482" alt="image" src="https://github.com/user-attachments/assets/454e808a-1754-403a-bd87-068989ffdc06" />
 
