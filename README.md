@@ -11,3 +11,12 @@ Hardware used:
   4. MQ135
   5. MQ7
 
+Circuit Diagram: 
+
+<img width="700" height="770" alt="image" src="https://github.com/user-attachments/assets/c3202a74-166b-4be0-a5ea-7bd7bb096e6a" />
+
+Dashboard Screenshots
+
+<img width="450" height="450" alt="image" src="https://github.com/user-attachments/assets/01a4d1c5-5157-4b2d-bb3d-cacf5c834fd7" /> <img width="450" height="450" alt="image" src="https://github.com/user-attachments/assets/fffb0619-ff35-449c-a9e2-5c3e1ef8f688" />
+
+Linear Regession model results
