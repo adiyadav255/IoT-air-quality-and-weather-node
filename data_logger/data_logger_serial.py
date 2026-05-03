@@ -2,7 +2,7 @@ import serial
 import csv
 from datetime import datetime
 
-port = 'COM3'    
+port = 'COM7'    
 baud = 115200
 
 ser = serial.Serial(port, baud)

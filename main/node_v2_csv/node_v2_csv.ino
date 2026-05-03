@@ -23,7 +23,7 @@ PMS pms(Serial2);
 PMS::DATA data;
 char ssid[] = "Connected, no internet";
 char pass[] = "Aditya@12345";
-const char* pc_ip="10.222.139.48";
+const char* pc_ip="10.145.218.48";
 const int pc_port=8000;
 WiFiUDP udp;
 void setup() {
@@ -62,7 +62,7 @@ void setup() {
   float calcR0_CO2 = 0;
   for (int i = 0; i < 10; i++) {
     co2Sensor.update();
-    calcR0_CO2 += co2Sensor.calibrate(5.5);
+    calcR0_CO2 += co2Sensor.calibrate(0.5);
     delay(500);
   }
   co2Sensor.setR0(calcR0_CO2 / 10);
@@ -104,7 +104,7 @@ void loop() {
   udp.beginPacket(pc_ip, pc_port);
   udp.print(buffer);
   udp.endPacket();
-  delay(15000);
+  delay(2000);
   Serial.println("Packet Sent");
   }
 }

@@ -13,7 +13,7 @@
 #define VOLT_RES 3.3  
 #define ADC_BIT_RES 12 
 #define RL 1.0
-#define RZERO_135 60.00
+#define RZERO_135 40.00
 #define RZERO_7 18.00       
 //DHT, MQ135, PMS//
 DHT dht(DHTPIN, DHTTYPE);
@@ -116,7 +116,7 @@ void loop() {
   udp.beginPacket(pc_ip, pc_port);
   udp.print(buffer);
   udp.endPacket();
-  delay(15000);
+  delay(2000);
   Serial.println("Packet Sent");
   }
 }

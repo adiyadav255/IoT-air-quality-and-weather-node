@@ -1,0 +1,176 @@
+import numpy as np
+from xgboost import XGBClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, f1_score, recall_score, confusion_matrix, precision_score
+
+
+# ===== LOAD DATA =====
+X_old = np.load("X_old.npy")
+y_old = np.load("y_old.npy")
+
+X_new = np.load("X_new.npy")
+y_new = np.load("y_new.npy")
+
+
+# ===== SPLIT NEW DATA (ONLY) =====
+X_new_train, X_new_test, y_new_train, y_new_test = train_test_split(
+    X_new,
+    y_new,
+    test_size=0.2,
+    stratify=y_new,
+    random_state=42
+)
+
+
+# ===== COMBINE TRAINING =====
+X_train = np.concatenate([X_old, X_new_train])
+y_train = np.concatenate([y_old, y_new_train])
+
+X_test = X_new_test
+y_test = y_new_test
+
+# ===== MODEL =====
+model = XGBClassifier(
+    n_estimators=150,
+    max_depth=5,
+    learning_rate=0.08,
+    subsample=0.9,
+    colsample_bytree=0.9,
+    scale_pos_weight=2.0,
+    eval_metric="logloss"
+)
+
+
+# ===== TRAIN =====
+model.fit(X_train, y_train)
+
+
+# ===== EVALUATE =====
+y_prob = model.predict_proba(X_test)[:, 1]
+for t in [0.5, 0.6, 0.65, 0.7, 0.75]:
+    y_pred = (y_prob >= t).astype(int)
+    print(f"\nThreshold: {t}")
+    evaluate_model(y_test, y_pred)
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("F1:", f1_score(y_test, y_pred))
+print("Recall (occupied):", recall_score(y_test, y_pred))
+
+
+Threshold: 0.5
+Confusion Matrix:
+[[254  42]
+ [ 24 238]]
+
+Metrics:
+Accuracy     : 0.8817
+Precision    : 0.8500
+Recall       : 0.9084
+F1 Score     : 0.8782
+Specificity  : 0.8581
+FPR          : 0.1419
+FNR          : 0.0916
+
+Threshold: 0.6
+Confusion Matrix:
+[[266  30]
+ [ 33 229]]
+
+Metrics:
+Accuracy     : 0.8871
+Precision    : 0.8842
+Recall       : 0.8740
+F1 Score     : 0.8791
+Specificity  : 0.8986
+FPR          : 0.1014
+FNR          : 0.1260
+
+Threshold: 0.65
+Confusion Matrix:
+[[273  23]
+ [ 39 223]]
+
+Metrics:
+Accuracy     : 0.8889
+Precision    : 0.9065
+Recall       : 0.8511
+F1 Score     : 0.8780
+Specificity  : 0.9223
+FPR          : 0.0777
+FNR          : 0.1489
+
+Threshold: 0.7
+Confusion Matrix:
+[[277  19]
+ [ 45 217]]
+
+Metrics:
+Accuracy     : 0.8853
+Precision    : 0.9195
+Recall       : 0.8282
+F1 Score     : 0.8715
+Specificity  : 0.9358
+FPR          : 0.0642
+FNR          : 0.1718
+
+Threshold: 0.75
+Confusion Matrix:
+[[284  12]
+ [ 56 206]]
+
+Metrics:
+Accuracy     : 0.8781
+Precision    : 0.9450
+Recall       : 0.7863
+F1 Score     : 0.8583
+Specificity  : 0.9595
+FPR          : 0.0405
+FNR          : 0.2137
+Accuracy: 0.8781362007168458
+F1: 0.8583333333333333
+Recall (occupied): 0.7862595419847328
+
+
+import numpy as np
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score
+
+def evaluate_model(y_true, y_pred, verbose=True):
+    cm = confusion_matrix(y_true, y_pred)
+
+    # Extract values
+    TN, FP, FN, TP = cm.ravel()
+
+    # Core metrics
+    accuracy = accuracy_score(y_true, y_pred)
+    precision = precision_score(y_true, y_pred)
+    recall = recall_score(y_true, y_pred)
+    f1 = f1_score(y_true, y_pred)
+
+    # Derived metrics
+    specificity = TN / (TN + FP) if (TN + FP) != 0 else 0
+    fpr = FP / (FP + TN) if (FP + TN) != 0 else 0
+    fnr = FN / (FN + TP) if (FN + TP) != 0 else 0
+
+    if verbose:
+        print("Confusion Matrix:")
+        print(cm)
+        print("\nMetrics:")
+        print(f"Accuracy     : {accuracy:.4f}")
+        print(f"Precision    : {precision:.4f}")
+        print(f"Recall       : {recall:.4f}")
+        print(f"F1 Score     : {f1:.4f}")
+        print(f"Specificity  : {specificity:.4f}")
+        print(f"FPR          : {fpr:.4f}")
+        print(f"FNR          : {fnr:.4f}")
+
+    return {
+        "cm": cm,
+        "accuracy": accuracy,
+        "precision": precision,
+        "recall": recall,
+        "f1": f1,
+        "specificity": specificity,
+        "fpr": fpr,
+        "fnr": fnr
+    }
+
