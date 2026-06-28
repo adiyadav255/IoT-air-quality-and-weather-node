@@ -1,0 +1,54 @@
+import numpy as np
+from xgboost import XGBClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, f1_score, recall_score
+
+
+# ===== LOAD DATA =====
+X_old = np.load("X_old.npy")
+y_old = np.load("y_old.npy")
+
+X_new = np.load("X_new.npy")
+y_new = np.load("y_new.npy")
+
+
+# ===== SPLIT NEW DATA (ONLY) =====
+X_new_train, X_new_test, y_new_train, y_new_test = train_test_split(
+    X_new,
+    y_new,
+    test_size=0.2,
+    stratify=y_new,
+    random_state=42
+)
+
+
+# ===== COMBINE TRAINING =====
+X_train = np.concatenate([X_old, X_new_train])
+y_train = np.concatenate([y_old, y_new_train])
+
+X_test = X_new_test
+y_test = y_new_test
+
+
+# ===== MODEL =====
+model = XGBClassifier(
+    n_estimators=150,
+    max_depth=5,
+    learning_rate=0.08,
+    subsample=0.9,
+    colsample_bytree=0.9,
+    scale_pos_weight=2.0,
+    eval_metric="logloss"
+)
+
+
+# ===== TRAIN =====
+model.fit(X_train, y_train)
+
+
+# ===== EVALUATE =====
+y_prob=model.predict_proba(X_test)[:,1]
+y_pred = (y_prob>0.35).astype(int)
+
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("F1:", f1_score(y_test, y_pred))
