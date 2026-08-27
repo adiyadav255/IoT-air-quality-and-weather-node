@@ -1,22 +1,32 @@
-# IoT-air-quality-and-weather-node
-An IoT node that can monitor and transmit air quality, temperature and humidity through WiFi (UDP Packets) to a connected device, which are displayed by a simple python-based (Tkinter) dashboard app
+#  AI Enhanced IoT Node for Air Quality Monitoring
 
-<img width="800" height="482" alt="image" src="https://github.com/user-attachments/assets/454e808a-1754-403a-bd87-068989ffdc06" />
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Platform: ESP32](https://img.shields.io/badge/Hardware-ESP32-red.svg)](https://www.espressif.com/en/products/socs/esp32)
+[![Framework: Arduino / C++](https://img.shields.io/badge/Framework-Arduino%20C%2B%2B-00979D.svg)](https://www.arduino.cc/)
+[![Python: 3.8+](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 
+An edge IoT sensing node designed for real-time ambient air quality measurement and microclimate monitoring. The system samples particulate matter ( PM2.5, PM10), gaseous pollutants (CO, NO2), and environmental metrics (temperature and relative humidity), publishing sensor data, real-time AQI and future AQI prediction (on-chip inference) over Wi-Fi UDP, displayed on a custom dashboard
 
-Hardware used:
-  1. ESP32 Devkit V1
-  2. PMS7003
-  3. DHT11
-  4. MQ135
-  5. MQ7
+---
 
-Circuit Diagram: 
+## 📌 Features
 
-<img width="700" height="770" alt="image" src="https://github.com/user-attachments/assets/c3202a74-166b-4be0-a5ea-7bd7bb096e6a" />
+- **Multi-Pollutant Sampling**:
+  - Laser scattering particulate detection for **PM2.5**, and **PM10**
+  - Electrochemical/semiconductor gas sensing for **CO** and **NO2**
+- **Other Parameters**: Real-time ambient temperature and relative humidity monitoring
+- **Robust Calibration & Baseline Correction**: Clean-air baseline resistance ($R_0$) estimation and logarithmic curve approximation for gas concentration derivation
+- **ML Based Prediction**: Linear Regression and a lightweight, windowed Neural Network (TinyNN) predict the AQI for the next 2 minute window
 
-Dashboard Screenshots
+---
 
-<img width="450" height="450" alt="image" src="https://github.com/user-attachments/assets/01a4d1c5-5157-4b2d-bb3d-cacf5c834fd7" /> <img width="450" height="450" alt="image" src="https://github.com/user-attachments/assets/fffb0619-ff35-449c-a9e2-5c3e1ef8f688" />
+## 🛠️ Hardware Stack & Wiring
 
-Linear Regession model results
+### Components
+| Component | Function | Interface | Operating Voltage |
+| :--- | :--- | :--- | :--- |
+| **ESP32 DevKit** | Microcontroller | 3.3V / 5V |
+| **PMS7003 / PMS5003** | Particulate Matter ($PM_{2.5}, PM_{10}$) | UART (Serial2) | 5V (VCC), 3.3V (Logic) |
+| **MQ-135** | Air Quality / Hazardous Gases ($NO_2$) | Analog (ADC) | 5V |
+| **MQ-7** | Carbon Monoxide ($CO$) | Analog (ADC) | 5V |
+| **DHT22** | Temperature, Relative Humidity & Pressure | GPIO / $I^2C$ | 3.3V |
